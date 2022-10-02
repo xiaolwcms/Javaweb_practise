@@ -1,0 +1,30 @@
+div{
+    text-align: center;
+    height: 100%;
+    padding: 15% 35%;
+}
+.divStyle{
+    height: 30px;
+    width: 400px;
+    padding: 10px;
+}
+label{
+    display: inline-block;
+    width: 20%;
+    font-size: 20px;
+    text-align: justify;
+    text-align-last: justify;
+}
+input{
+
+    height: 30px;
+    width: 70%;
+    margin:10px 0;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+button{
+    width: 45%;
+    height: 100%;
+    font-size: 15px;
+}

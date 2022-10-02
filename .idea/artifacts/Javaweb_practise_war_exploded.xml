@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="Javaweb_practise:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/Javaweb_practise_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="Javaweb_practise/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="Javaweb_practise" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/lib/mysql-connector-java-8.0.25.jar" />
+          <element id="library" level="project" name="lib" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

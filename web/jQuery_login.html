@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+</head>
+<body>
+<div>
+    <div class="divStyle"><label>账号：</label><input type="text" name="staff_phone" value="" id="inputPhone"></div>
+    <!--<br>-->
+    <div class="divStyle"><label>密码：</label><input type="password" name="staff_password" value="" id="inputPassword"></div>
+    <!--<br>-->
+    <div class="divStyle">
+        <button type="button" id="loginUser">登录</button>
+        <button type="button" id="enterRegister">注册</button>
+    </div>
+</div>
+<script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function (){
+        //添加登录事件
+        $('#loginUser').bind('click',function (){
+            //获取账号密码
+            let staff_phone=$("#inputPhone").val();
+            let staff_password=$("#inputPassword").val();
+            if(judgeVariableNUll(staff_phone)&&judgeVariableNUll(staff_password)){
+                //封装数据
+                let myJSONObject={
+                    "staff_phone":staff_phone,
+                    "staff_password":staff_password
+                }
+                $.ajax({
+                    url:"/loginServlet",
+                    type:"POST",
+                    contentType:'application/json',
+                    data:JSON.stringify(myJSONObject),
+                    success:function (data){
+                        console.log(data)
+                        if(data=="success"){
+                            window.location.href="/jQuery_meritsStatistics.html";
+                        }
+                    }
+                })
+            }else{
+                alert("账号密码不能为空");
+            }
+        })
+        //跳转到注册页面
+        $('#enterRegister').bind('click',function (){
+            window.location.href="/jQuery_register.html";
+        })
+        $("#inputPhone").bind("keyup",function (){
+            //获取账号
+            if(judgeVariableNUll($("#inputPhone").val())){
+                $("#inputPhone").css("border","1px solid blue");
+            }else{
+                $("#inputPhone").css("border","1px solid red");
+            }
+        })
+
+        $("#inputPassword").bind("keyup",function (){
+            //获取账号
+            if(judgeVariableNUll($("#inputPassword").val())){
+                $("#inputPassword").css("border","1px solid blue");
+            }else{
+                $("#inputPassword").css("border","1px solid red");
+            }
+        })
+
+    })
+    //判断变量是否为空，变量不为空返回true，为空返回false
+    function judgeVariableNUll(str){
+        if(str==null||str==""||str==undefined){
+            return false;
+        }else{
+            return true;
+        }
+    }
+</script>
+</body>
+</html>

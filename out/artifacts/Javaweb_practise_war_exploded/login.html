@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+</head>
+<body>
+<div>
+    <div class="divStyle"><label>账号：</label><input type="text" name="staff_phone" value="" id="inputPhone"></div>
+    <div class="divStyle"><label>密码：</label><input type="password" name="staff_password" value="" id="inputPassword"></div>
+    <div class="divStyle">
+        <button type="button" onclick="loginUser()">登录</button>
+        <button type="button" onclick="enterRegister()">注册</button>
+    </div>
+</div>
+<script>
+    //用户登录
+    function loginUser(){
+        //获取账号密码
+        let staff_phone=document.getElementById("inputPhone").value;
+        let staff_password=document.getElementById("inputPassword").value;
+        if(judgeVariableNUll(staff_phone)&&judgeVariableNUll(staff_password)){
+            //封装数据
+            let myJSONObject={
+                "staff_phone":staff_phone,
+                "staff_password":staff_password
+            }
+            let xmlHttp=new XMLHttpRequest();
+            xmlHttp.open('POST','/loginServlet',false);
+            // xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+            xmlHttp.setRequestHeader("Content-Type","application/json");
+            xmlHttp.onreadystatechange=function () {
+                if(xmlHttp.readyState==4 && xmlHttp.status==200){
+                    console.log("responseText"+xmlHttp.responseText);
+                    if(xmlHttp.responseText=="success"){
+                        window.location.href="/meritsStatistics.html";
+                    }
+                }else{
+                    console.log("responseText"+xmlHttp.responseText);
+                }
+
+            }
+            xmlHttp.send(JSON.stringify(myJSONObject));
+        }else{
+            alert("账号密码不能为空");
+        }
+    }
+    //跳转到注册页面
+    function enterRegister(){
+        window.location.href="/register.html";
+    }
+    //判断变量是否为空，变量不为空返回true，为空返回false
+    function judgeVariableNUll(str){
+        if(str==null||str==""||str==undefined){
+            return false;
+        }else{
+            return true;
+        }
+    }
+</script>
+</body>
+</html>

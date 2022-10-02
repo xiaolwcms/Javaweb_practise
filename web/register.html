@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册页面</title>
+    <link rel="stylesheet" type="text/css" href="css/register.css">
+</head>
+<body>
+<div id="mainBody">
+    <form action="/registerServlet" method="post" id="submitForm">
+        <div class="divStyle">
+            <label>员工姓名</label>
+             <input type="text" name="staff_name" value="" id="staff_name" onkeyup="checkStaffName()"
+                                      placeholder="输入中文姓名"/>
+        </div>
+        <div class="divStyle">
+            <label>手机号</label>
+            <input type="number" maxlength="11" name="staff_phone" value="" id="staff_phone"
+                                     onkeyup="checkStaffPhone()" placeholder="输入手机号">
+        </div>
+        <div class="divStyle">
+            <label>归属部门</label>
+            <select name="department_id" id="department_id">
+                <option value="100001">信息服务部</option>
+                <option value="100002">综合部</option>
+                <option value="100003">人力资源部</option>
+            </select>
+        </div>
+        <div class="divStyle">
+            <label>职务</label>
+            <input type="radio" class="postRadio" name="staff_post" value="普通员工1" checked="checked">普通员工1
+            <input type="radio" class="postRadio" name="staff_post" value="普通员工1">普通员工2
+            <input type="radio" class="postRadio" name="staff_post" value="普通员工1">普通员工3
+        </div>
+        <div class="divStyle">
+            <label>邮箱</label><input type="text" name="staff_email" id="staff_email" placeholder="输入邮箱"
+                                    onkeydown="checkStaffEmail()" value="">
+        </div>
+        <div class="divStyle">
+            <label>系统密码</label><input type="password" name="staff_password" value="" id="staff_password"
+                                      placeholder="输入密码" onkeydown="checkStaffPassword()">
+        </div>
+        <div class="divStyle">
+            <label>确认密码</label><input type="password" name="second_staff_password" id="second_staff_password" value=""
+                                      placeholder="再次输入密码" onkeydown="checkSecondStaffPassword()">
+        </div>
+        <div class="divStyle">
+            <button type="button" onclick="confirmRegister()">确认</button>
+            <button type="button" onclick="window.history.back()">返回</button>
+        </div>
+    </form>
+</div>
+<script>
+    //确认注册
+    function confirmRegister() {
+        //获取参数值
+        let staff_name = document.getElementById("staff_name").value;
+        let staff_phone = document.getElementById("staff_phone").value;
+        //获取选中的Radio选中的值
+        let postRadio = document.getElementsByName("staff_post");
+        let postRadioChecked = "";
+        postRadio.forEach(function (element, index) {
+            if (element.checked) {
+                postRadioChecked = element.value;
+            }
+        })
+        //获取select选中的值
+        let department = document.getElementById("department_id").getElementsByTagName('option');
+        let getSelect = "";
+        for (let i = 0; i < department.length; i++) {
+            if (department[i].selected) {
+                getSelect = department[i].value;
+            }
+        }
+        let staff_email = document.getElementById("staff_email").value;
+        let staff_password = document.getElementById("staff_password").value;
+        let second_staff_password = document.getElementById("second_staff_password").value;
+        //判断数据是否为空
+        if(judgeVariableNUll(staff_name)&&judgeVariableNUll(staff_phone)&&judgeVariableNUll(staff_email)&&judgeVariableNUll(staff_password)&&judgeVariableNUll(second_staff_password)){
+            //封装数据
+            let myObject = {
+                "staff_name": staff_name,
+                "staff_phone": staff_phone,
+                "staff_post": postRadioChecked,
+                "department_id": getSelect,
+                "staff_email": staff_email,
+                "staff_password": staff_password,
+                "second_staff_password": second_staff_password,
+            }
+            //将数据发送给后端
+            //创建xmlHttpRequest对象
+            let xmlHttp = new XMLHttpRequest();
+            //打开open
+            xmlHttp.open("post", "/registerServlet", false);
+            //设置请求格式数据
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            //设置回调函数
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                    if (xmlHttp.responseText == "插入成功") {
+                        alert("插入成功");
+                        //跳转到登录页面
+                        window.location.href="/register.html";
+                    } else {
+                        alert("插入失败");
+                    }
+                } else {
+                    alert("插入失败");
+                }
+            }
+            xmlHttp.send(JSON.stringify(myObject));
+        }else{
+            alert("存在值为空")
+        }
+    }
+
+    //员工姓名校验规则，返回true表示输入的姓名合法，返回false表示输入的姓名不合法
+    function checkStaffName() {
+        let staff_name = document.getElementById("staff_name").value;//获取参数值
+        let regexp = /[^\u4e00-\u9fa5]/g;//正则表达式
+        if (!regexp.test(staff_name)) {//校验字符串
+            if (staff_name.length > 10) {
+                document.getElementById("staff_name").value = staff_name.slice(0, 10);
+                return false;
+            } else if (staff_name.length >= 1) {
+                return true;
+            }
+        } else {
+            document.getElementById("staff_name").value = staff_name.replace(regexp, '');
+            return false;
+        }
+    }
+
+    //手机号校验规则，返回true表示输入的手机号合法，返回false表示输入的手机号不合法
+    function checkStaffPhone() {
+        let staff_phone = document.getElementById("staff_phone").value;
+        if (staff_phone.length > 10) {
+            document.getElementById("staff_phone").value = staff_phone.slice(0, 11);
+        }
+        return true;
+    }
+
+    //校验密码
+    //返回0，密码合法
+    //返回1，密码长度不合法
+    //返回2，不存在数字
+    //返回3，大小写字母没有同时存在
+    function checkStaffPassword() {
+        let staff_phone = document.getElementById("staff_password").value;
+        let regexpNumber = /[0-9]+/g;//校验是否存在数字
+        let regexpCChar = /[A-Z]+/g;//校验是否存在大写字母
+        let regexplChar = /[a-z]+/g;//校验是否存在小写字母
+
+        if (staff_phone.length >= 8 && staff_phone.length <= 20) {//校验密码长度是否合法
+            if (regexpNumber.test(staff_phone)) {//校验是否存在数字
+                if (regexpCChar.test(staff_phone) && regexplChar.test(staff_phone)) {
+                    return 0;
+                } else {
+                    return 3;
+                }
+            } else {
+                return 2;//返回2，不存在数字
+            }
+        } else {
+            return 1;//返回1，密码长度不合法
+        }
+    }
+
+    //校验两次密码是否一致，返回true，两次密码相等。返回false，两次密码不相等
+    function checkSecondStaffPassword() {
+        //获取第一次输入的密码
+        let staff_password = document.getElementById("staff_password").value;
+        //获取第二次输入的密码
+        let second_staff_password = document.getElementById("second_staff_password").value;
+        if (staff_password == second_staff_password) {
+            return true;//返回true，两次密码相等
+        } else {
+            return false;//返回false，两次密码不相等
+        }
+    }
+
+    //校验邮箱；返回true表示邮箱格式合法，返回false表示邮箱格式不合法
+    function checkStaffEmail() {
+        //获取邮箱账号
+        let staff_email = document.getElementById("staff_email").value;
+        let regexp = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
+        return regexp.test(staff_email);//返回true邮箱格式正确，返回false邮箱格式错误
+    }
+
+    //判断变量是否为空，变量不为空返回true，为空返回false
+    function judgeVariableNUll(str) {
+        if (str == null || str == "" || str == undefined) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+</body>
+</html>

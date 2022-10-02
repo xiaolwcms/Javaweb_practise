@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绩效统计页面</title>
+    <link rel="stylesheet" type="text/css" href="css/meritsStatistics.css">
+</head>
+<!--
+1、登录成功后展示绩效统计页面
+查询条件：员工姓名、员工手机号、归属部门（下拉框）
+展示员工姓名、手机号、邮箱（脱敏展示，如1490771580@qq.com展示成149*******@qq.com）、归属部门、绩效得A次数、绩效得B次数、绩效得C次数、绩效得D次数
+2、若用户在未登录的情况下访问此页面需重定向到登录页面、同时未登录情况下也无法单独访问接口
+-->
+<body>
+<div id="MainBody">
+    <div id="queryCondition">
+        <label>员工姓名：</label><input type="text" name="staff_name" value="" id="staff_name">
+        <label>员工手机号：</label><input type="text" name="staff_phone" value="" id="staff_phone">
+        <labe>归属部门：</labe>
+        <select name="department_name" id="department_name">
+            <option value="请选择">请选择</option>
+            <option value="信息服务部">信息服务部</option>
+            <option value="综合部">综合部</option>
+            <option value="人力资源部">人力资源部</option>
+        </select>
+        <button type="button" onclick="sendRequest()">查询</button>
+    </div>
+    <!--<hr>-->
+    <div>
+        <table>
+            <caption>绩效统计</caption>
+            <thead>
+            <tr>
+                <th>员工姓名</th>
+                <th>手机号</th>
+                <th>邮箱</th>
+                <th>归属部门</th>
+                <th>绩效得A次数</th>
+                <th>绩效得B次数</th>
+                <th>绩效得C次数</th>
+                <th>绩效得D次数</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+            <!--<tr>-->
+            <!--    <td>一号员工</td>-->
+            <!--    <td>1234567890</td>-->
+            <!--    <td>123456789@com</td>-->
+            <!--    <td>信息服务部</td>-->
+            <!--    <td>1</td>-->
+            <!--    <td>0</td>-->
+            <!--    <td>0</td>-->
+            <!--    <td>1</td>-->
+            <!--</tr>-->
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    //获取查询结果数据
+    function sendRequest() {
+        //获取输入框数据
+        let staff_name = document.getElementById("staff_name").value;
+        let staff_phone = document.getElementById("staff_phone").value;
+        let department_name = document.getElementById("department_name").value;
+        //封装数据
+        let sendRequestData = {
+            "staff_name": staff_name,
+            "staff_phone": staff_phone,
+            "department_name": department_name
+        }
+        //创建XMLHttpRequest对象
+        let xmlHttp = new XMLHttpRequest();
+        //设置请求方式，访问路径，同步
+        xmlHttp.open("POST", "/staffServlet", true);
+        //设置请求头
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        //设置回调函数
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                //获取后端返回的数据
+                let data = eval(xmlHttp.responseText);
+                //清空数据
+                document.getElementById("tbody").innerHTML = "";
+                data.forEach(function (element, index) {
+                    //渲染数据
+                    document.getElementById("tbody").innerHTML += "     <tr>\n" +
+                        "            <td>" + element.staff_name + "</td>\n" +
+                        "            <td>" + element.staff_phone + "</td>\n" +
+                        "            <td>" + desensiEmail(element.staff_email) + "</td>\n" +
+                        "            <td>" + element.department_name + "</td>\n" +
+                        "            <td>" + element.merits_A + "</td>\n" +
+                        "            <td>" + element.merits_B + "</td>\n" +
+                        "            <td>" + element.merits_C + "</td>\n" +
+                        "            <td>" + element.merits_D + "</td>\n" +
+                        "        </tr>";
+                })
+
+            } else {
+                console.log("获取后端数据失败");
+            }
+        }
+        //发送数据
+        // xmlHttp.send("staff_name="+staff_name+"&staff_phone="+staff_phone+"&department_name="+department_name);
+        xmlHttp.send(JSON.stringify(sendRequestData));
+        //打印数据
+    }
+    function desensiEmail(email) {
+        return email.replace(/(.{0,3}).*@(.*)/, "$1***@$2")
+    }
+</script>
+</body>
+</html>
